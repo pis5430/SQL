@@ -126,7 +126,10 @@ from employees;
 select first_name,
         commission_pct,
         NVL(commission_pct, 100),
-        NVL2(commission_pct, 100 , 0)
+        NVL(commission_pct, '100'),
+        NVL2(commission_pct, 100 , 0),
+        NVL2(commission_pct, '100' , 0),
+        NVL2(commission_pct, 100 , '0')
 from employees;
-
+-- NVL2(commission_pct, null이 아닐때의 값 , null일때의 값) // '0' 값을 넣어줬을때 정렬이 다르게됨 (문자,숫자차이?)
 

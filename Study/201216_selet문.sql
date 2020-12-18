@@ -61,7 +61,7 @@ select first_name || last_name
 from employees;
 
 select first_name || ' ' || last_name as name
--- ' ' 공백 문자열이 왜 들어가는지 다시한번 확인해보기
+-- ' ' 공백 문자열이 왜 들어가는지 다시한번 확인해보기(그냥 보기힘들어서)
 from employees;
 
 select first_name||' hire date is ' || hire_date

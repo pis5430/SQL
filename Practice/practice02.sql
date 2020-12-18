@@ -76,7 +76,7 @@ select  department_id, --평균임금과 최저임금의 차이가 2000 미만�
 from employees
 group by department_id
 having (avg(salary) - min(salary)) < 2000
-order by (avg(salary) - min(salary)) desc;
+order by (avg(salary) - min(salary)) desc; --별명으로도 정렬가능
 
 /*
 문제8.
@@ -116,3 +116,23 @@ from employees
 group by manager_id , hire_date
 having hire_date >= '05/01/01'  -- hire_date도 group by에 넣어줘야함
 and avg(salary) >= 5000
+order by avg(salary) desc; --평균급여를 내림차순으로 정렬
+
+
+/*
+문제10
+아래회사는 보너스 지급을 위해 직원을 입사일 기준으로 나눌려고 합니다. 
+입사일이 02/12/31일 이전이면 '창립맴버, 03년은 '03년입사’, 04년은 ‘04년입사’ 
+이후입사자는 ‘상장이후입사’ optDate 컬럼의 데이터로 출력하세요.
+정렬은 입사일로 오름차순으로 정렬합니다.
+*/
+
+select  first_name 이름,
+        hire_date 입사일,
+        case when hire_date <= '02/12/31' then '창립멤버' --02/12/31 이전
+             when hire_date <= '03/12/31' then '03년입사' 
+             when hire_date <= '04/12/31' then '04년입사' 
+             else '상장이후입사' --이후입사자
+        end optData
+from employees
+order by hire_date asc;

@@ -5,7 +5,8 @@
 매니저가 있는 직원은 몇 명입니까? 아래의 결과가 나오도록 쿼리문을 작성하세요
 */
 select count(manager_id) "haveMngCnt"
-from employees;
+from employees
+where manager_id is not null;
 
 /*
 문제2. 
@@ -23,7 +24,7 @@ from jobs;
 예) 2014년 07월 10일
 */
 
-select min(to_char(hire_date,' YYYY"년 "MM"월 "DD"일"'))
+select max(to_char(hire_date,' YYYY"년 "MM"월 "DD"일"'))
 from employees;
 
 /*
@@ -45,7 +46,7 @@ order by department_id desc;
 업무(job_id)별로 평균임금, 최고임금, 최저임금을 업무아이디(job_id)와 함께 출력하고 
 정렬순서는 최저임금 내림차순, 평균임금(소수점 반올림)
 , 오름차순 순입니다.
-(정렬순서는 최소임금 2500 구간일때 확인해볼 것) --??
+(정렬순서는 최소임금 2500 구간일때 확인해볼 것)
 */
 select  round(avg(salary),0),
         max(salary),
@@ -53,7 +54,6 @@ select  round(avg(salary),0),
         job_id
 from employees
 group by job_id
-having min(salary)>2100  -- 최소임금 2500 구간일때? 의미 확인하기
 order by min(salary)desc ,round(avg(salary),0) asc ;
 
 /*
@@ -61,7 +61,7 @@ order by min(salary)desc ,round(avg(salary),0) asc ;
 가장 오래 근속한 직원의 입사일은 언제인가요? 다음 형식으로 출력해주세요.
 예) 2001-01-13 토요일 
 */
-select max(to_char(hire_date,'YYYY-MM-DD DAY'))
+select min(to_char(hire_date,'YYYY-MM-DD DAY'))
 from employees;
 
 /*

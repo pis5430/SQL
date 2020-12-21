@@ -7,6 +7,13 @@
 부서이름(department_name) 오름차순, 사번(employee_id) 내림차순 으로 정렬하세요.
 (106건)
 */
+select  e.employee_id 사번,
+        e.first_name 이름,
+        e.last_name 급여,
+        d.department_name 부서명
+from employees e , departments d
+where e.department_id = d.department_id
+order by d.department_name asc , e.employee_id desc;
 
 
 /*
@@ -14,15 +21,47 @@
 employees 테이블의 job_id는 현재의 업무아이디를 가지고 있습니다.
 직원들의 사번(employee_id), 이름(firt_name), 급여(salary), 부서명(department_name),
 현재업무(job_title)를 사번(employee_id) 오름차순 으로 정렬하세요.
-부서가 없는 Kimberely(사번 178)은 표시하지 않습니다.
+부서가 없는 Kimberely(사번 178)은 표시하지 않습니다. 
 (106건)
 */
+
+select  em.employee_id 사번,
+        em.first_name 이름,
+        em.salary 급여,
+        de.department_name 부서명,
+        jo.job_title 현재업무
+from employees em, departments de, jobs jo
+where em.department_id = de.department_id
+and em.job_id = jo.job_id
+order by em.department_id asc;
 
 /*
 문제2-1.
 문제2에서 부서가 없는 Kimberely(사번 178)까지 표시해 보세요
 (107건)
 */
+--1 (+로 표현)
+select  em.employee_id 사번,
+        em.first_name 이름,
+        em.salary 급여,
+        de.department_name 부서명,
+        jo.job_title 현재업무
+from employees em, departments de, jobs jo
+where em.department_id = de.department_id(+)
+and em.job_id = jo.job_id
+order by em.department_id desc;
+
+--2 left outer join 사용하는법 찾아보기 (현재는 에러남...)
+--left outer join 두번 사용은 아닌듯
+select  em.employee_id 사번,
+        em.first_name 이름,
+        em.salary 급여,
+        de.department_name 부서명,
+        jo.job_title 현재업무
+--from employees em left outer join departments de left outer join  jobs jo
+--on em.department_id = de.department_id
+--on em.job_id = jo.job_id
+order by em.department_id desc;
 
 /*
 문제3.
@@ -31,12 +70,27 @@ employees 테이블의 job_id는 현재의 업무아이디를 가지고 있습�
 부서가 없는 도시는 표시하지 않습니다.
 (27건)
 */
+select lo.location_id 도시아이디,
+        lo.city 도시명,
+        de.department_name 부서명,
+        de.department_id 부서아이디
+from departments de left outer join locations lo
+on de.location_id = lo.location_id
+order by lo.location_id asc;
 
 /*
 문제3-1.
 문제3에서 부서가 없는 도시도 표시합니다. 
 (43건)
 */
+select lo.location_id 도시아이디,
+        lo.city 도시명,
+        de.department_name 부서명,
+        de.department_id 부서아이디
+from departments de , locations lo
+where de.location_id(+) = lo.location_id
+order by lo.location_id asc;
+
 
 /*
 문제4.
@@ -45,6 +99,12 @@ employees 테이블의 job_id는 현재의 업무아이디를 가지고 있습�
 (25건)
 */
 
+select  re.region_name 지역이름,
+        co.country_name 나라이름
+from regions re left outer join countries co
+on re.region_id = co.region_id
+order by re.region_name asc , co.country_name desc;
+
 /*
 문제5. 
 자신의 매니저보다 채용일(hire_date)이 빠른 사원의 
@@ -52,6 +112,14 @@ employees 테이블의 job_id는 현재의 업무아이디를 가지고 있습�
 매니저입사일(hire_date)을 조회하세요.
 (37건)
 */
+
+select *
+from jobs;
+
+select *
+from employees;
+
+
 
 /*
 문제6.

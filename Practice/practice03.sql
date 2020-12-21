@@ -112,14 +112,17 @@ order by re.region_name asc , co.country_name desc;
 매니저입사일(hire_date)을 조회하세요.
 (37건)
 */
-
-select *
-from jobs;
-
-select *
-from employees;
-
-
+--self
+select em.employee_id 사번,
+        em.first_name 이름,
+        em.hire_date 채용일,
+        mn.first_name 매니저이름,
+        mn.hire_date 매니저입사일
+from employees em , employees mn
+where em.employee_id = mn.manager_id
+and mn.hire_date > em.hire_date;
+--em.employee_id 와 mn.manager_id 가 같으면 조건충족 
+--and mn.hire_date의 입사일보다 채용일이 빠른 사원
 
 /*
 문제6.
@@ -128,6 +131,17 @@ from employees;
 값이 없는 경우 표시하지 않습니다.
 (27건)
 */
+select co.country_name 나라명,
+        co.country_id 나라아이디,
+        lo.city 도시명,
+        lo.location_id 도시아이디,
+        de.department_name 부서명,
+        de.department_id 부서아이디
+from countries co,locations lo , departments de
+where co.country_id = lo.country_id
+and de.location_id = lo.location_id
+order by co.country_name asc;
+
 
 /*
 문제7.
@@ -136,18 +150,51 @@ job_history 테이블은 과거의 담당업무의 데이터를 가지고 있다
 이름은 first_name과 last_name을 합쳐 출력합니다.
 (2건)
 */
+select  em.employee_id 사번,
+        em.first_name || ' ' || em.last_name "이름(풀네임)",
+        --em.job_id 현재업무아이디,
+        jh.job_id 과거업무아이디,
+        jh.start_date 시작일,
+        jh.end_date 종료일
+from employees em , job_history jh
+where jh.employee_id = em.employee_id 
+and jh.job_id = 'AC_ACCOUNT';
+
 
 /*
 문제8.
 각 부서(department)에 대해서 부서번호(department_id), 부서이름(department_name), 
-매니저(manager)의 이름(first_name), 위치(locations)한 도시(city), 나라(countries)의 이름(countries_name) 그리고 지역구분(regions)의 이름(resion_name)까지 전부 출력해 보세요.
+매니저(manager)의 이름(first_name), 위치(locations)한 도시(city), 나라(countries)의 
+이름(countries_name) 그리고 지역구분(regions)의 이름(resion_name)까지 전부 출력해 보세요.
 (11건)
 */
+select  de.department_id 부서번호,
+        de.department_name 부서이름,
+        ma.first_name 매니저이름,
+        lo.city 위치한도시,
+        co.country_name 나라의이름,
+        re.region_name 지역구분의이름
+from departments de,employees ma,locations lo,countries co,regions re
+where ma.employee_id = de.manager_id  -- 직원(직원아이디) = 부서(관리자아이디)
+and de.location_id = lo.location_id
+and lo.country_id = co.country_id
+and co.region_id = re.region_id;
+
+--em.job_id like '%_MGR' -- MGR이 들어가는 job_id가 manager인지 불명확
 
 /*
-
 문제9.
-각 사원(employee)에 대해서 사번(employee_id), 이름(first_name), 부서명(department_name), 매니저(manager)의 이름(first_name)을 조회하세요.
+각 사원(employee)에 대해서 사번(employee_id), 이름(first_name), 
+부서명(department_name), 매니저(manager)의 이름(first_name)을 조회하세요.
 부서가 없는 직원(Kimberely)도 표시합니다.
 (106명)
 */
+select  em.employee_id 사번,
+        em.first_name 이름,
+        de.department_name 부서명,
+        ma.first_name 매니저이름
+        --부서가 없는 직원도 표시
+from employees em left outer join departments de
+on em.department_id = de.department_id , employees ma
+where em.manager_id = ma.employee_id;
+

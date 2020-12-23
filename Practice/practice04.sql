@@ -248,4 +248,49 @@ and em.department_id = deav.department_id;
 직원 입사일이 11번째에서 15번째의 직원의 사번, 이름, 급여, 입사일을 입사일 순서로 출력하세요
 */
 
+--(1) 직원 입사일 순서대로 정렬된 테이블 -- o
+select employee_id,
+       first_name,
+       salary,
+       hire_date
+from employees
+order by hire_date asc;
+
+--(2)(1)테이블에 가상의 일렬번호 부여된 테이블  -- rt
+select rownum rowname,
+       o.employee_id,
+       o.first_name,
+       o.salary,
+       o.hire_date
+from (select employee_id,
+             first_name,
+             salary,
+             hire_date
+      from employees
+      order by hire_date asc) o;
+
+--(3) 직원 입사일이 11번째에서 15번째의 직원의 사번, 이름, 급여, 입사일을 입사일 순서로 출력하세요
+select rt.rowname,
+       rt.employee_id,
+       rt.first_name,
+       rt.salary,
+       rt.hire_date
+from (select rownum rowname,
+             o.employee_id,
+             o.first_name,
+             o.salary,
+             o.hire_date
+      from (select employee_id,
+                   first_name,
+                   salary,
+                   hire_date
+            from employees
+            order by hire_date asc) o
+       )rt
+where rt.rowname >= 11
+and rt.rowname <= 15;
+
+
+
+
 /**/

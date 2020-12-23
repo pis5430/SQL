@@ -69,8 +69,40 @@ order by salary desc;
 매니저별최소급여, 매니저별최대급여 입니다.
 (9건)
 */
+--(1)
+-- 매니저별로 평균급여 최소급여 최대급여/ 매니저별 평균급여는 소수점 첫째자리에서 반올림 합니다.
+-- 통계대상(직원)은 2005년 이후의 입사자 입니다. 
+-- 평균급여 5000이상
+select  manager_id 매니저별,
+        round(avg(salary), 1) 평균급여,
+        min(salary) 최소급여,
+        max(salary) 최대급여
+from employees
+where hire_date >= '05/01/01'
+having avg(salary) >= 5000
+group by manager_id
+order by avg(salary) desc;
 
+--(2)
+-- 매니저 이름을 구하는 방법 (pk = fk) (ed.employee_id = de.manager_id 가 일치하는 관리자의 이름)
+--(1)번 테이블에 매니저 이름만 추가하면 된다. (1)번을 하나의 테이블로 만들어서 self join
 
+select masal.manager_id,
+       em.first_name,
+       masal.avsal,
+       masal.minsal,
+       masal.maxsal 
+from(select  manager_id, -- 별명넣으니까 where절에서 오류남
+             round(avg(salary), 1) avsal,
+             min(salary) minsal,
+             max(salary) maxsal 
+     from employees
+     where hire_date >= '05/01/01'
+     having avg(salary) >= 5000
+     group by manager_id
+     order by avg(salary) desc) masal , employees em
+where masal.manager_id = em.employee_id; --매니저 이름을 구하기 위한 비교 테이블
+     
 
 /*
 문제4.
@@ -79,7 +111,10 @@ order by salary desc;
 부서가 없는 직원(Kimberely)도 표시합니다.
 (106명)
 */
-
+select first_name,
+        job_id
+from employees
+where job_id like '%M%';
 
 
 /*
@@ -93,6 +128,7 @@ order by salary desc;
 문제6.
 가장 늦게 입사한 직원의 이름(first_name last_name)과 연봉(salary)과 근무하는 부서 이름(department_name)은?
 */
+
 
 
 /*

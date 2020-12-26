@@ -219,56 +219,239 @@ and hire_date = (select max(hire_date)
 성(last_name)과  업무(job_title), 연봉(salary)을 조회하시오.
 */
 
---부서별 평균 : 평균연봉이 제일 높은 부서는? --> department_id =90 -- 19333.3333
+-- (1)부서별 평균 : 평균연봉이 제일 높은 부서는? --> department_id =90 -- 19333.3333
 select department_id,
        avg(salary)
 from employees
 group by department_id;
 
--- 평균연봉이 가장 높은 부서 -- max(avg(salary))
+-- (2) 평균연봉이 가장 높은 부서 -- max(avg(salary))
 select max(avg(salary))
 from employees
 group by department_id;
 
---직원번호(employee_id), 이름(firt_name), 성(last_name)과   연봉(salary)을 조회 --> employees
+--(3) (1),(2) 합치기
+
+select avsal.department_id,
+       avsal.avgs
+from (select department_id,
+             avg(salary) avgs
+      from employees
+      group by department_id) avsal , (select max(avg(salary))maxa
+                                       from employees
+                                       group by department_id) masal
+where avsal.avgs = masal.maxa; 
+
+
+--(4) 직원번호(employee_id), 이름(firt_name), 성(last_name)과   연봉(salary)을 조회 --> employees
 --업무(job_title),을 조회 -->jobs
 select em.employee_id 직원번호,
        em.first_name 이름,
        em.last_name 성,
        jo.job_title 업무,
        em.salary 연봉
-from employees em , jobs jo
+from employees em , jobs jo 
 where em.job_id = jo.job_id;
 
---결과 
+
+--결과 (5) = (3)+(4)
 --> 평균연봉(salary)이 가장 높은 부서 직원들의 (조건/테이블)
 --> 직원번호(employee_id), 이름(firt_name), 성(last_name)과  업무(job_title), 연봉(salary)을 조회 
 
---1 where (and부분부터 다시해보기)
+--1 
 select em.employee_id 직원번호,
        em.first_name 이름,
        em.last_name 성,
-       jo.job_title 업무,
-       em.salary 연봉
-from employees em , jobs jo
+       em.salary 연봉,
+       result.avgs avg_salary,
+       jo.job_title 업무
+from employees em , jobs jo ,(select avsal.department_id,
+                                     avsal.avgs
+                              from (select department_id,
+                                           avg(salary) avgs
+                                    from employees
+                                    group by department_id) avsal , (select max(avg(salary))maxa
+                                                                     from employees
+                                                                     group by department_id) masal
+                               where avsal.avgs = masal.maxa) result
 where em.job_id = jo.job_id
-and avg(salary) = (select max(avg(salary))
-                      from employees
-                      group by department_id);
+and em.department_id = result.department_id;
+
 
 
 /*
 문제8.
-평균 급여(salary)가 가장 높은 부서는? 
+평균 급여(salary)가 가장 높은 부서는? / 부서명 출력
 */
+--(1) 부서중 가장 높은 평균급여
+select department_id,
+       avg(salary)
+from employees
+group by department_id;
 
+--(1-1)
+select department_id,
+       avg(salary) avgs
+from employees
+group by department_id) avsal , (select max(avg(salary))maxa
+                                 from employees
+                                 group by department_id) masal;
+                                 
+--(1-2)
+select avsal.department_id,
+       avsal.avgs
+from (select department_id,
+      avg(salary) avgs
+      from employees
+      group by department_id) avsal , (select max(avg(salary))maxa
+                                              from employees
+                                              group by department_id) masal
+where avsal.avgs = masal.maxa;
+
+--(2) 부서 이름 출력
+select department_name
+from departments;
+
+--(1),(2) 합치기
+select de.department_name
+from departments de ,(select avsal.department_id,
+                                     avsal.avgs
+                              from (select department_id,
+                                           avg(salary) avgs
+                                    from employees
+                                    group by department_id) avsal , (select max(avg(salary))maxa
+                                                                     from employees
+                                                                     group by department_id) masal
+                               where avsal.avgs = masal.maxa) result
+where de.department_id = result.department_id;                                  
 
 /*
 문제9.
-평균 급여(salary)가 가장 높은 지역은? 
+평균 급여(salary)가 가장 높은 지역은?
 */
+--(1)지역별 평균급여 테이블을 만들고 , 지역별 최고급여 테이블을 만들어서 where 조건으로 (1)조건과 (2)조건이 같은값을 출력하는 방법
+--(2)평균급여가 높은 지역순으로 출력하여 첫번째 값을 출력하는 방법
+
+--(1)
+-- 지역별 평균급여
+-- 지역별 평균급여가 높은 지역은? -->Europe
+select  avg(em.salary),
+        re.region_name
+from employees em, departments de, locations lo, countries co, regions re
+where em.department_id = de.department_id
+and de.location_id = lo.location_id
+and lo.country_id = co.country_id
+and co.region_id = re.region_id
+group by re.region_name;
+
+
+--지역별 평균급여중에 제일 높은급여는? -- 8916.666666
+select max(avgs)
+from (select  avg(em.salary) avgs,
+              re.region_name
+      from employees em, departments de, locations lo, countries co, regions re
+      where em.department_id = de.department_id
+      and de.location_id = lo.location_id
+      and lo.country_id = co.country_id
+      and co.region_id = re.region_id
+      group by re.region_name) maxsal;
+      
+      
+--(지역별 평균급여 = 지역별 평균급여중에 제일 높은 급여) 조건을 만족하는 지역을 출력
+select avt.region_name 
+from (select  avg(em.salary) avgs,
+              re.region_name
+      from employees em, departments de, locations lo, countries co, regions re
+      where em.department_id = de.department_id
+      and de.location_id = lo.location_id
+      and lo.country_id = co.country_id
+      and co.region_id = re.region_id
+      group by re.region_name) avt ,(select max(avgs) maxs
+                                     from (select  avg(em.salary) avgs,
+                                                   re.region_name
+                                           from employees em, departments de, locations lo, countries co, regions re
+                                           where em.department_id = de.department_id
+                                           and de.location_id = lo.location_id
+                                           and lo.country_id = co.country_id
+                                           and co.region_id = re.region_id
+                                           group by re.region_name) maxsal) mat
+where avt.avgs = mat.maxs;
+
+--(2)평균급여가 높은 지역순으로 출력하여 첫번째 값을 출력하는 방법
+
+-- 1.평균급여가 높은 지역순으로 정렬하여 출력 // 임의의 숫자는 같이 쓰일 수 없음
+select  avg(em.salary) avgs,
+        re.region_name
+from employees em, departments de, locations lo, countries co, regions re
+where em.department_id = de.department_id
+and de.location_id = lo.location_id
+and lo.country_id = co.country_id
+and co.region_id = re.region_id
+group by re.region_name
+order by avgs desc;
+
+-- 2.임의의 숫자 부여 (order by avgs desc; 정렬된 순서대로)
+select rownum,
+       avlist.region_name
+from (select  avg(em.salary) avgs,
+              re.region_name
+      from employees em, departments de, locations lo, countries co, regions re
+      where em.department_id = de.department_id
+      and de.location_id = lo.location_id
+      and lo.country_id = co.country_id
+      and co.region_id = re.region_id
+      group by re.region_name
+      order by avgs desc) avlist
+where rownum = 1;
+
+-- 3.rownum 값이 같이 출력되지 않게 
+select  result.region_name
+from (select rownum ro,
+             avlist.region_name
+        from (select  avg(em.salary) avgs,
+                      re.region_name
+              from employees em, departments de, locations lo, countries co, regions re
+              where em.department_id = de.department_id
+              and de.location_id = lo.location_id
+              and lo.country_id = co.country_id
+              and co.region_id = re.region_id
+              group by re.region_name
+              order by avgs desc) avlist
+      ) result
+where result.ro = 1;
+
 
 /*
 문제10.
 평균 급여(salary)가 가장 높은 업무는? 
 */
+--(1)업무별 평균급여 --> 가장 높은순으로 정렬
+select  avg(em.salary) avgs,
+        jo.job_title
+from employees em, jobs jo
+where em.job_id = jo.job_id 
+group by jo.job_title
+order by avgs desc;
+
+--(2) (1)번 테이블에 임의의 숫자 정렬
+select rownum ro,
+       joblist.job_title 
+from (select  avg(em.salary) avgs,
+              jo.job_title
+      from employees em, jobs jo
+      where em.job_id = jo.job_id 
+      group by jo.job_title
+      order by avgs desc) joblist;
+
+--(3) 평균급여가 가장 높은 업무 출력
+select result.job_title
+from (select rownum ro,
+             joblist.job_title 
+      from (select  avg(em.salary) avgs,
+                    jo.job_title
+            from employees em, jobs jo
+            where em.job_id = jo.job_id 
+            group by jo.job_title
+            order by avgs desc) joblist
+       ) result
+where result.ro = 1;

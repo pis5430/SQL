@@ -28,14 +28,13 @@ create table book (
 select *
 from book;
 
-
 --book 시퀀스 생성
 create sequence seq_book_id
 increment by 1
 start with 1;
 
 --book 시퀀스 삭제(잘못 건드렸을경우 삭제하고 다시만드는 용도)
---drop sequence seq_book_id;
+drop sequence seq_book_id;
 
 --author 시퀀스 생성
 create sequence seq_author_id
@@ -43,7 +42,7 @@ increment by 1
 start with 1;
 
 --author 시퀀스 삭제(잘못 건드렸을경우 삭제하고 다시만드는 용도)
---drop sequence seq_author_id;
+drop sequence seq_author_id;
 
 --시퀀스 생성 확인
 select *
@@ -119,7 +118,7 @@ from author;
 select  b.book_id,
         b.title,
         b.pubs,
-        b.pubs_date,
+        to_char(b.pubs_date,'YYYY-MM'),
         a.author_id,
         a.author_name,
         a.author_desc
